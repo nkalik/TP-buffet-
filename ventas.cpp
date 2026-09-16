@@ -196,15 +196,16 @@ void actualizarStock(long pos, producto p, int cantidad)
         return;
     }
 
-    p.stockactual -= cantidad;
+   p.stockactual -= cantidad;
 
+    // Te posicionás exactamente en el registro 'pos'
     fseek(arch, pos * sizeof(producto), SEEK_SET);
 
+    // Sobrescribís el producto con el stock actualizado
     fwrite(&p, sizeof(producto), 1, arch);
 
     fclose(arch);
 }
-
 
 //Actualiza la comisión acumulada del mozo en mozos.dat
 void actualizarComisionMozo(int idMozo, float comision)
