@@ -8,3 +8,5 @@ Nicolas Kalik Paredes-nkalik
 joaquin gonzalez - joaquco
 
 Paola Polo - paola555polo
+
+Santiago Girona - sgirona-utn
