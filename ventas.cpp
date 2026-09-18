@@ -97,7 +97,7 @@ void encriptarClave(const char *entrada, char *salida)
 // FUNCION AUXILIAR: Crea mozos.dat de prueba localmente
 void crearMozosDePrueba()
 {
-    FILE *f = fopen("mozos.dat", "wb");
+    FILE *f = fopen("mozos.dat", "ab");
     if (f == NULL)
         return;
 
