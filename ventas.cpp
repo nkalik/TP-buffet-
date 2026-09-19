@@ -8,7 +8,6 @@ using namespace std;
 const float tasa_comision = 0.10f; // 10% de comision
 const int CLAVE_K = 5;             // Corrimiento para la clave
 
-
 struct producto
 {
     int codigo;
@@ -38,10 +37,6 @@ struct comanda
 // ====================
 
 void encriptarClave(const char *entrada, char *salida);
-
-// SOLO PARA PRUEBAS LOCALES
-// ELIMINAR CUANDO NORMALIZACION.CPP GENERE mozos.dat
-//void crearMozosDePrueba();
 
 bool validarLogin(int idBuscado, const char *claveIngresada);
 
@@ -77,7 +72,6 @@ bool guardarVenta(
     producto prod,
     long posicion);
 
-
 // ====================
 // FUNCIONES
 // ====================
@@ -94,30 +88,6 @@ void encriptarClave(const char *entrada, char *salida)
     salida[i] = '\0';
 }
 
-// FUNCION AUXILIAR: Crea mozos.dat de prueba localmente
-
-//void crearMozosDePrueba()
-//{
-     //   FILE *f = fopen("mozos.dat", "ab");
-     //  if (f == NULL)
-     //   return;
-
-    //mozo m1, m2;
-    //m1.idmozo = 1;
-    //strcpy(m1.nombre, "Juan Perez");
-    //encriptarClave("sol", m1.password); // "xtq"
-    //m1.totalcomision = 0.0f;
-
-    // m2.idmozo = 2;
-    //strcpy(m2.nombre, "Maria Gomez");
-    //encriptarClave("1234", m2.password); // "6789"
-    //m2.totalcomision = 0.0f;
-
-    //fwrite(&m1, sizeof(mozo), 1, f);
-    //fwrite(&m2, sizeof(mozo), 1, f);
-    //fclose(f);
-//}
-
 // Validacion de login contra mozos.dat
 bool validarLogin(int idBuscado, const char *claveIngresada)
 {
@@ -125,7 +95,7 @@ bool validarLogin(int idBuscado, const char *claveIngresada)
 
     if (f == NULL)
     {
-        cout << "Error: No se encuentra mozos.dat" << endl;
+        cout << "Error: No se encuentra mozos.dat. Ejecute normalizacion primero." << endl;
         return false;
     }
 
@@ -153,17 +123,16 @@ bool validarLogin(int idBuscado, const char *claveIngresada)
 
     fclose(f);
 
-   cout << "Error: Mozo inexistente." << endl;
+    cout << "Error: Mozo inexistente." << endl;
     return false;
 }
 
-
-// Buscar producto en inventario.dat en la raiz 
+// Buscar producto en inventario.dat en la raiz
 bool buscarProducto(int codigoBuscado, producto &p, long &pos)
 {
-    FILE *arch =fopen("inventario.dat", "rb");
+    FILE *arch = fopen("inventario.dat", "rb");
 
-  if (arch == NULL)
+    if (arch == NULL)
     {
         cout << "Error: No se encuentra inventario.dat en la raiz." << endl;
         return false;
@@ -191,62 +160,52 @@ void actualizarStock(long pos, producto p, int cantidad)
 {
     FILE *arch = fopen("inventario.dat", "rb+");
 
-   if (arch == NULL)
+    if (arch == NULL)
     {
         cout << "Error al abrir inventario.dat para actualizar stock." << endl;
         return;
     }
 
-   p.stockactual -= cantidad;
+    p.stockactual -= cantidad;
 
-    // Te posicionás exactamente en el registro 'pos'
+    // Posicionamiento exacto en el registro 'pos'
     fseek(arch, pos * sizeof(producto), SEEK_SET);
 
-    // Sobrescribís el producto con el stock actualizado
+    // Sobrescribe el producto con el stock actualizado
     fwrite(&p, sizeof(producto), 1, arch);
 
     fclose(arch);
 }
 
-//Actualiza la comisión acumulada del mozo en mozos.dat
+// Actualiza la comisión acumulada del mozo en mozos.dat
 void actualizarComisionMozo(int idMozo, float comision)
 {
-    FILE* arch = fopen("mozos.dat", "rb+");
+    FILE *arch = fopen("mozos.dat", "rb+");
 
-   if (arch == NULL)
+    if (arch == NULL)
     {
         cout << "Error al abrir mozos.dat para actualizar comision." << endl;
         return;
     }
 
     mozo m;
-//long posicionRegistro = 0;  //para q es?
-    while(fread(&m, sizeof(mozo), 1, arch) == 1)
+
+    while (fread(&m, sizeof(mozo), 1, arch) == 1)
     {
-        if(m.idmozo == idMozo)
+        if (m.idmozo == idMozo)
         {
             m.totalcomision += comision;
 
             fseek(arch, -((long)sizeof(mozo)), SEEK_CUR);
-
             fwrite(&m, sizeof(mozo), 1, arch);
-
             break;
         }
-        //posicionRegistro++;// investigar esto
     }
 
     fclose(arch);
 }
 
-
-// Ordenar archivo de comandas - Método burbuja
-// Este ordena comandas_dd-mm-aaaa.dat por idmozo-
-/* Al finalizar la carga se ordena el archivo del día por idmozo
-   utilizando ordenamiento burbuja sobre archivo binario
-   mediante fseek, fread y fwrite, ya que la cantidad de
-   ventas diarias es reducida y la implementación resulta sencilla.
-*/
+// Ordenar archivo de comandas por idmozo (Burbuja)
 void ordenarArchivo(const char nombreArchivo[])
 {
     FILE *arch = fopen(nombreArchivo, "rb+");
@@ -255,9 +214,6 @@ void ordenarArchivo(const char nombreArchivo[])
         return;
 
     fseek(arch, 0, SEEK_END);
-//long tamBytes = ftell(arch);
-// int cantidadRegistros = tamBytes / sizeof(comanda);
-
     int cantidadRegistros = ftell(arch) / sizeof(comanda);
 
     comanda c1;
@@ -285,7 +241,6 @@ void ordenarArchivo(const char nombreArchivo[])
     fclose(arch);
 }
 
-//
 void mostrarEncabezado()
 {
     cout << "==========================================" << endl;
@@ -293,49 +248,21 @@ void mostrarEncabezado()
     cout << "==========================================" << endl;
 }
 
-//Función pedirFecha
-bool pedirFecha(char fecha[], char nombreArchivo[])
-{
-    cout << "Ingrese fecha (DD-MM-AAAA): ";
-    cin >> fecha;
-
-    if(!validarFecha(fecha))
-    {
-        cout << "Error: formato de fecha invalido." << endl;
-        return false;
-    }
-
-    sprintf(nombreArchivo, "comandas_%s.dat", fecha);
-
-    return true;
-}
-
-//Validación de fecha
-/*Ejemplos que aceptará
-03-06-2025
-15-11-2026
-01-01-2030
-
-Ejemplos que rechazará
-3-6-2025
-99-99-9999
-hola
-abc
-12/06/2025*/
+// Validación de fecha (DD-MM-AAAA)
 bool validarFecha(const char fecha[])
 {
-    if(strlen(fecha) != 10)
+    if (strlen(fecha) != 10)
         return false;
 
-    if(fecha[2] != '-' || fecha[5] != '-')
+    if (fecha[2] != '-' || fecha[5] != '-')
         return false;
 
-    for(int i = 0; i < 10; i++)
+    for (int i = 0; i < 10; i++)
     {
-        if(i == 2 || i == 5)
+        if (i == 2 || i == 5)
             continue;
 
-        if(fecha[i] < '0' || fecha[i] > '9')
+        if (fecha[i] < '0' || fecha[i] > '9')
             return false;
     }
 
@@ -346,19 +273,34 @@ bool validarFecha(const char fecha[])
                (fecha[8] - '0') * 10 +
                (fecha[9] - '0');
 
-    if(dia < 1 || dia > 31)
+    if (dia < 1 || dia > 31)
         return false;
 
-    if(mes < 1 || mes > 12)
+    if (mes < 1 || mes > 12)
         return false;
 
-    if(anio < 2000)
+    if (anio < 2000)
         return false;
 
     return true;
 }
 
-//Función pedirLogin
+bool pedirFecha(char fecha[], char nombreArchivo[])
+{
+    cout << "Ingrese fecha (DD-MM-AAAA): ";
+    cin >> fecha;
+
+    if (!validarFecha(fecha))
+    {
+        cout << "Error: formato de fecha invalido." << endl;
+        return false;
+    }
+
+    sprintf(nombreArchivo, "comandas_%s.dat", fecha);
+
+    return true;
+}
+
 bool pedirLogin(int &idMozo)
 {
     char clave[20];
@@ -371,7 +313,7 @@ bool pedirLogin(int &idMozo)
 
     return validarLogin(idMozo, clave);
 }
-//pedir datos de venta:
+
 bool pedirDatosVenta(int &codigoProducto, int &cantidad)
 {
     cout << "Codigo de producto: ";
@@ -380,7 +322,7 @@ bool pedirDatosVenta(int &codigoProducto, int &cantidad)
     cout << "Cantidad: ";
     cin >> cantidad;
 
-    if(cantidad <= 0)
+    if (cantidad <= 0)
     {
         cout << "Error: La cantidad debe ser mayor a cero." << endl;
         return false;
@@ -389,20 +331,19 @@ bool pedirDatosVenta(int &codigoProducto, int &cantidad)
     return true;
 }
 
-//Función verificarProducto
 bool verificarProducto(
     int codigoProducto,
     producto &prod,
     long &posicion,
     int cantidad)
 {
-    if(!buscarProducto(codigoProducto, prod, posicion))
+    if (!buscarProducto(codigoProducto, prod, posicion))
     {
         cout << "Producto inexistente." << endl;
         return false;
     }
 
-  if (prod.stockactual < cantidad)
+    if (prod.stockactual < cantidad)
     {
         cout << "Error: Stock insuficiente. (Quedan " << prod.stockactual << " unidades)." << endl;
         return false;
@@ -410,7 +351,7 @@ bool verificarProducto(
 
     return true;
 }
-// Función guardarVenta
+
 bool guardarVenta(
     const char nombreArchivo[],
     int idMozo,
@@ -426,48 +367,41 @@ bool guardarVenta(
     nuevaVenta.cantidad = cantidad;
 
     float importeVenta = prod.precio * cantidad;
-
     nuevaVenta.comision = importeVenta * tasa_comision;
 
     FILE *archivoComandas = fopen(nombreArchivo, "ab");
 
-    if(archivoComandas == NULL)
+    if (archivoComandas == NULL)
     {
         cout << "Error al abrir archivo del dia." << endl;
         return false;
     }
 
     fwrite(&nuevaVenta, sizeof(comanda), 1, archivoComandas);
-
     fclose(archivoComandas);
 
     actualizarStock(posicion, prod, cantidad);
-
     actualizarComisionMozo(idMozo, nuevaVenta.comision);
 
-cout << "-> Venta registrada correctamente. (Comision generada: $" << nuevaVenta.comision << ")" << endl;
+    cout << "-> Venta registrada correctamente. (Comision generada: $" << nuevaVenta.comision << ")" << endl;
     return true;
 }
 
 int main()
 {
-// Verificacion de integridad binaria exigida por la catedra
+    // Verificacion de integridad binaria exigida por la catedra
     if (sizeof(producto) != 64)
     {
         cout << "ERROR CRITICO: sizeof(producto) es " << sizeof(producto) << " (debe ser 64)." << endl;
         return 1;
     }
 
-    // SOLO para pruebas locales.
-    // Se puede comentar o borrar cuando normalizacion.cpp genere el mozos.dat definitivo.
-    //crearMozosDePrueba();
-
     mostrarEncabezado();
 
     char fecha[11];
     char nombreArchivo[40];
 
- // Pedimos la fecha una sola vez
+    // Pedimos la fecha una sola vez
     while (!pedirFecha(fecha, nombreArchivo))
     {
         cout << "Intente nuevamente.\n" << endl;
@@ -506,8 +440,6 @@ int main()
     // Ordenar la planilla del día antes de finalizar
     ordenarArchivo(nombreArchivo);
 
-    cout << "\nArchivo ordenado por id de mozo." << endl;
-//cout << "\nPlanilla '" << nombreArchivo << "' ordenada exitosamente por ID de mozo." << endl;
+    cout << "\nPlanilla '" << nombreArchivo << "' ordenada exitosamente por ID de mozo." << endl;
     return 0;
 }
-
