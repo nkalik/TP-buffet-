@@ -33,14 +33,28 @@ struct comanda {
     float comision;
 };
 
+// STRUCT QUE USAMOS PARA LAS PLANILLAS POR DIA
 struct ventaspordia {
-    char fecha[11];
-    comanda ventas[100];
-    int lenventas;
+    char fecha[11]; // GUARDA LA FECHA
+    comanda ventas[100]; // GUARDA LOS DATOS DE CADA VENTA, MAXIMO 100
+int lenventas; // CUENTA CUANTAS VENTAS HUBO ESE DIA
 };
 
+const int CLAVE_K = 5; // NUMERO QUE USAMOS PARA EL ENCRIPTADO
 
-// BUSCAR UN MOZO POR NOMBRE
+const char password_generica[20] = "123456"; // CONTRASEÑA GENERICA
+
+// FUNCION QUE SUMA LA CLAVE K A CADA CARACTER
+void encriptarClave(const char *entrada, char *salida) {
+    int i = 0;
+    while (entrada[i] != '\0') {
+        salida[i] = entrada[i] + CLAVE_K;
+        i++;
+    }
+    salida[i] = '\0';
+};
+
+// FUNCION QUE BUSCA UN MOZO POR NOMBRE
 int buscar_mozo(mozo mozos[], int lenmozos, char nombre[]) {
 
     for(int i = 0; i < lenmozos; i++) {
@@ -53,7 +67,7 @@ int buscar_mozo(mozo mozos[], int lenmozos, char nombre[]) {
     return -1;
 }
 
-// ORDENAR LAS VENTAS POR ID DE MOZO
+// FUNCION QUE ORDENA LAS VENTAS POR ID DE MOZO   
 void ordenar_ventas(comanda ventas[], int lenventas) {
 
     for(int i = 0; i < lenventas - 1; i++) {
@@ -76,7 +90,7 @@ void ordenar_ventas(comanda ventas[], int lenventas) {
     }
 }
 
-// ORDENAR Y GUARDAR LAS VENTAS DE CADA DIA
+// FUNCION QUE ORDENA Y GUARDA LAS VENTAS DE CADA DIA
 void guardar_archivos(ventaspordia comandas[]) {
 
     for(int dia = 1; dia <= 31; dia++) {
@@ -102,7 +116,7 @@ void guardar_archivos(ventaspordia comandas[]) {
         }
     }
 }
-
+// FUNCION QUE MUESTRA LA INFORMACION DEL INVENTARIO, DE FORMA LINDA
 void mostrar_inventario(producto productos[], int lenproductos){
 
     printf("%-10s%-20s%-10s%-10s\n", "codigo", "descripcion", "precio", "stock");
@@ -116,7 +130,7 @@ void mostrar_inventario(producto productos[], int lenproductos){
                productos[i].stockactual);
     }
 }
-
+// FUNCION QUE MUESTRA LA INFORMACION DE LAS VENTAS DEL DIA
 void mostrar_archivos(ventaspordia comandas[]) {
 
     for(int dia = 1; dia <= 31; dia++) {
@@ -155,31 +169,31 @@ void mostrar_archivos(ventaspordia comandas[]) {
 int main() {
 
     cout << "===== INICIO DE NORMALIZACION =====" << endl;
-
-   
-    // LEER COMANDAS HISTORICAS
-    FILE *archivoscomandas = fopen("comandas_historicas.dat", "rb");
-
+    
+    // ABRE EL ARCHIVO
+    FILE *archivoscomandas = fopen("datos/comandas_historicas.dat", "rb");
+    
+    // VERIFICA QUE SE ABRIO CORRECTAMENTE
     if(archivoscomandas == NULL) {
         cout << "error al abrir comandas_historicas.dat"<< endl;
         return 1;
     }
-
+    
     cout << "comandas_historicas.dat abierto correctamente"<< endl;
-
-    mozo mozos[100];
+    
+    mozo mozos[100]; // VECTOR DE MOZOS, MAXIMO 100
     int lenmozos = 0;
 
-    ventaspordia comandas[32] = {};
+    ventaspordia comandas[32] = {}; // VECTOR PARA PLANILLAS DE VENTAS POR DIA
 
     comandahistorica aux;
 
     while(fread(&aux, sizeof(comandahistorica), 1, archivoscomandas) == 1) {
 
-        // BUSCAR EL MOZO
+        // BUSCA EL MOZO
         int posmozo = buscar_mozo(mozos, lenmozos, aux.nombremozo);
 
-        // SI NO EXISTE, AGREGAR MOZO
+        // SI NO EXISTE, AGREGA EL MOZO
         if(posmozo == -1) {
 
             posmozo = lenmozos;
@@ -187,6 +201,8 @@ int main() {
             mozos[posmozo].idmozo = lenmozos + 1;
 
             strcpy(mozos[posmozo].nombre, aux.nombremozo);
+
+            encriptarClave(password_generica, mozos[posmozo].password);
 
             mozos[posmozo].password[0] = '\0';
 
@@ -197,18 +213,18 @@ int main() {
             cout << "mozo: "<< mozos[posmozo].idmozo<< " - "<< mozos[posmozo].nombre<< endl;
         }
 
-        // ACUMULAR LA COMISION
+        // ACUMULA LA COMISION
         mozos[posmozo].totalcomision += aux.comision;
 
-        // OBTENER EL DIA
+        // OBTIENE EL DIA
         int dia =(aux.fecha[0] - '0') * 10 +(aux.fecha[1] - '0');
 
-        // GUARDAR LA FECHA
+        // GUARDA LA FECHA
         if(comandas[dia].lenventas == 0) {
             strcpy(comandas[dia].fecha, aux.fecha);
         }
 
-        // GUARDAR LA COMANDA 
+        // GUARDA LA COMANDA EN LA PLANILLA DEL DIA
         int posventa = comandas[dia].lenventas;
 
         comandas[dia].ventas[posventa].idmozo = mozos[posmozo].idmozo;
@@ -223,7 +239,7 @@ int main() {
 
     cout << "mozos encontrados: "<< lenmozos<< endl;
 
-    // GUARDAR MOZOS.DAT
+    // GUARDA MOZOS.DAT
     FILE *archivomozos = fopen("mozos.dat", "wb");
 
     if(archivomozos == NULL) {
@@ -237,15 +253,15 @@ int main() {
 
     cout << "mozos.dat guardado correctamente"<< endl;
 
-    // ORDENAR Y GUARDAR ARCHIVOS DIARIOS
+    // ORDENA Y GUARDA LAS PLANILLAS DEL DIA
     guardar_archivos(comandas);
     mostrar_archivos(comandas);
 
-    // CARGAR INVENTARIO
+    // CARGA INVENTARIO
     producto productos[100];
     int lenproductos = 0;
 
-    FILE *archivoinventario = fopen("inventario.dat", "rb");
+    FILE *archivoinventario = fopen("datos/inventario.dat", "rb");
 
     if(archivoinventario == NULL) {
         cout << "error al abrir inventario.dat"<< endl;
@@ -260,7 +276,7 @@ int main() {
 
     cout << "inventario cargado. productos: "<< lenproductos<< endl;
 
-    // ACTUALIZAR STOCK
+    // ACTUALIZA STOCK
     for(int dia = 1; dia <= 31; dia++) {
 
         for(int i = 0; i < comandas[dia].lenventas; i++) {
@@ -278,8 +294,8 @@ int main() {
         }
     }
 
-    // GUARDAR INVENTARIO ACTUALIZADO
-    archivoinventario = fopen("inventario.dat", "wb");
+    // GUARDA EL INVENTARIO ACTUALIZADO
+    archivoinventario = fopen("datos/inventario.dat", "wb");
 
     if(archivoinventario == NULL) {
         cout << "error al guardar inventario.dat"<< endl;
