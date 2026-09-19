@@ -209,8 +209,6 @@ int main() {
             mozos[posmozo].totalcomision = 0;
 
             lenmozos++;
-
-            cout << "mozo: "<< mozos[posmozo].idmozo<< " - "<< mozos[posmozo].nombre<< endl;
         }
 
         // ACUMULA LA COMISION
@@ -252,6 +250,24 @@ int main() {
     fclose(archivomozos);
 
     cout << "mozos.dat guardado correctamente"<< endl;
+
+    // registro auxiliar para leer mozos.dat
+    mozo auxmozos;          
+
+    archivomozos = fopen("mozos.dat", "rb");
+
+    if(archivomozos == NULL){
+        cout<< "error al leer mozos.dat"<< endl;
+        return 1;
+    }
+
+    while(fread(&auxmozos, sizeof(mozo), 1, archivomozos) == 1){
+        cout << auxmozos.idmozo << " - "
+        << auxmozos.nombre << " - " 
+        << auxmozos.totalcomision << endl;
+    }
+
+    fclose(archivomozos);
 
     // ORDENA Y GUARDA LAS PLANILLAS DEL DIA
     guardar_archivos(comandas);
