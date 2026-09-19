@@ -41,7 +41,7 @@ void encriptarClave(const char *entrada, char *salida);
 
 // SOLO PARA PRUEBAS LOCALES
 // ELIMINAR CUANDO NORMALIZACION.CPP GENERE mozos.dat
-void crearMozosDePrueba();
+//void crearMozosDePrueba();
 
 bool validarLogin(int idBuscado, const char *claveIngresada);
 
@@ -95,27 +95,28 @@ void encriptarClave(const char *entrada, char *salida)
 }
 
 // FUNCION AUXILIAR: Crea mozos.dat de prueba localmente
-void crearMozosDePrueba()
-{
-    FILE *f = fopen("mozos.dat", "ab");
-    if (f == NULL)
-        return;
 
-    mozo m1, m2;
-    m1.idmozo = 1;
-    strcpy(m1.nombre, "Juan Perez");
-    encriptarClave("sol", m1.password); // "xtq"
-    m1.totalcomision = 0.0f;
+//void crearMozosDePrueba()
+//{
+     //   FILE *f = fopen("mozos.dat", "ab");
+     //  if (f == NULL)
+     //   return;
 
-    m2.idmozo = 2;
-    strcpy(m2.nombre, "Maria Gomez");
-    encriptarClave("1234", m2.password); // "6789"
-    m2.totalcomision = 0.0f;
+    //mozo m1, m2;
+    //m1.idmozo = 1;
+    //strcpy(m1.nombre, "Juan Perez");
+    //encriptarClave("sol", m1.password); // "xtq"
+    //m1.totalcomision = 0.0f;
 
-    fwrite(&m1, sizeof(mozo), 1, f);
-    fwrite(&m2, sizeof(mozo), 1, f);
-    fclose(f);
-}
+    // m2.idmozo = 2;
+    //strcpy(m2.nombre, "Maria Gomez");
+    //encriptarClave("1234", m2.password); // "6789"
+    //m2.totalcomision = 0.0f;
+
+    //fwrite(&m1, sizeof(mozo), 1, f);
+    //fwrite(&m2, sizeof(mozo), 1, f);
+    //fclose(f);
+//}
 
 // Validacion de login contra mozos.dat
 bool validarLogin(int idBuscado, const char *claveIngresada)
@@ -459,7 +460,7 @@ int main()
 
     // SOLO para pruebas locales.
     // Se puede comentar o borrar cuando normalizacion.cpp genere el mozos.dat definitivo.
-    crearMozosDePrueba();
+    //crearMozosDePrueba();
 
     mostrarEncabezado();
 
