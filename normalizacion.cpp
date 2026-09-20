@@ -204,8 +204,6 @@ int main() {
 
             encriptarClave(password_generica, mozos[posmozo].password);
 
-            mozos[posmozo].password[0] = '\0';
-
             mozos[posmozo].totalcomision = 0;
 
             lenmozos++;
