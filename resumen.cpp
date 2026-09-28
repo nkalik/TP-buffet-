@@ -2,12 +2,7 @@
 #include <cstdio>  // FILE, fopen, fread, fclose, sprintf
 #include <cstring> // strcpy
 using namespace std;
-struct mozo{
-    int idmozo;
-    char nombre[50];
-    char password[20];
-    float totalcomision;
-};
+
 struct comanda{
     int idmozo;
     int codigoproducto;
@@ -45,40 +40,14 @@ bool pedirarchivo(char nombrearchivo[]){
     return true;
 }
 
-// Busca el mozo por id dentro del array que se cargo
-int buscarmozo(mozo mozos[], int lenmozos, int idmozo){
-    int i = 0;
-
-    // se ejecuta hasta que coincidan los id
-    while (mozos[i].idmozo != idmozo){
-        i++;
-    }
-    return i;
-}
 
 int main(){
     cout << "          RESUMEN DE CIERRE          " << endl;
-
-    mozo mozos[100];
-    int lenmozos = 0;
 
     resumensemanal resumen[100];
     int lenresumen = 0;
 
     int totalvendido = 0;
-
-    FILE *archivomozos = fopen("mozos.dat", "rb");
-    if(archivomozos == NULL){
-        cout << "ERROR: No se encuentra mozos.dat" << endl;
-        return 1;
-    }
-
-    // Se cargan los mozos en memoria
-    while(fread(&mozos[lenmozos], sizeof(mozo), 1, archivomozos) == 1){
-        lenmozos++;
-    }
-
-    fclose(archivomozos);
 
     char nombrearchivo[50];
 
@@ -96,21 +65,17 @@ int main(){
     comanda aux;
 
     while(fread(&aux, sizeof(comanda), 1, archivosemanal) == 1){
+
         // entero auxiliar, se usa en el if solo para el primer registro leido
         int pos = lenresumen - 1; 
 
         // acumula los registros con mismo mozo, y crea un nuevo registro resumen cuando el mozo es distinto al ultimo registro leido
         if(pos == -1 || resumen[pos].idmozo != aux.idmozo){
+
             // aca pos vale 0, se crea el primer resumen
             pos = lenresumen;
 
             resumen[pos].idmozo = aux.idmozo;
-
-            // la posicion donde se encuentra el idmozo
-            int posmozo = buscarmozo(mozos, lenmozos, aux.idmozo);
-
-            // una vez encontrada la posicion accedemos al nombre para copiarlo en resumen
-            strcpy(resumen[pos].nombre, mozos[posmozo].nombre);
 
             // inicializamos para que empiecen a contar desde 0
             resumen[pos].lenventas = 0;
@@ -130,19 +95,18 @@ int main(){
     fclose(archivosemanal);
 
     cout << endl;
-    printf("%-8s%-20s%-12s%-14s%-10s\n", "ID", "Nombre", "Ventas", "Unidades", "Comision");
+    printf("%-8s%-12s%-14s%-10s\n", "ID", "Ventas", "Unidades", "Comision");
     cout << endl;
 
     for (int i = 0; i < lenresumen; i++){
-        printf("%-8d%-20s%-12d%-14d$%-9.2f\n",
+        printf("%-8d%-12d%-14d$%-9.2f\n",
             resumen[i].idmozo,
-            resumen[i].nombre,
             resumen[i].lenventas,
             resumen[i].unidadesvendidas,
             resumen[i].totalcomision);
     }
 
-    cout <<"\nTotal de unidades vendidas en la semana: "<< totalvendido << endl;
+    cout <<"\nTotal de unidades vendidas en la semana: " << totalvendido << endl;
 
     return 0;
 }
