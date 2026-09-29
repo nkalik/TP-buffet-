@@ -66,7 +66,7 @@ int main(){
 
     while(fread(&aux, sizeof(comanda), 1, archivosemanal) == 1){
 
-        // entero auxiliar, se usa en el if solo para el primer registro leido
+        // entero auxiliar, asegura -1 para la primer lectura
         int pos = lenresumen - 1; 
 
         // acumula los registros con mismo mozo, y crea un nuevo registro resumen cuando el mozo es distinto al ultimo registro leido
