@@ -7,3 +7,4 @@
 build/
 /*.dat
 .claude/
+compile_flags.txt
