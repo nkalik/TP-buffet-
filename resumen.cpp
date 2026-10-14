@@ -19,25 +19,60 @@ struct resumensemanal{
     float totalcomision;
 };
 
+/* Pide un entero entre min y max, si el usuario escribe letras o se equivoca de numero
+avisa y vuleve a pedir. Despues de tres intentos devuelve false*/
+bool leerentero(char mensaje[], int min, int max, int &valor){
+    int intentos = 0;
+
+    while(intentos < 3){
+        cout << mensaje;
+        if(!(cin >> valor)){
+            // el usuario no escribio un numero, limpia y descarta el tipeo
+            cin.clear();
+            cin.ignore(100, '\n' );
+            cout << "\nERROR: ingrese un numero entero" << endl;
+            intentos++;
+        }else{
+            if(valor >= min && valor <= max){
+                return true;
+            }
+            cout << "\nERROR: el valor debe estar entre " << min << " y " << max << endl;
+            intentos++;
+        }
+    }
+    return false;
+}
+
+/* Pide semana y mes para armar el nombre del archivo, si el archivo no existe vuelve a pedir.
+Despues de tres intentos devuelve false*/
 bool pedirarchivo(char nombrearchivo[]){
     int semana, mes;
-    
-    cout << "\nIngrese la semana (ej 1): ";
-    cin >> semana;
+    int intentos = 0;
 
-    cout <<"Ingrese el mes (1-12): ";
-    cin >> mes;
+    while(intentos < 3){
+        cout << endl;
 
-    sprintf(nombrearchivo, "comandas_semana_s%d-%02d.dat", semana, mes);
+        if(!leerentero("\nIngrese la semana (1-5): ", 1, 5, semana)){
+            return false;
+        }
+        if(!leerentero("\nIngrese el mes (1-12): ", 1, 5, mes)){
+            return false;
+        }
 
-    FILE *archivosemanal = fopen(nombrearchivo, "rb");
-    if(archivosemanal == NULL){
-        cout << "ERROR: No se encuentra " << nombrearchivo << endl;
-        return false;
+        sprintf(nombrearchivo, "comandas_semana_s%d-%02d.dat", semana, mes);
+
+        FILE *archivosemanal = fopen(nombrearchivo, "rb");
+        if(archivosemanal != NULL){
+            fclose(archivosemanal);
+            return true;
+        }
+        cout << "\nERROR: No se encuentra " << nombrearchivo << endl;
+        cout << "\nIntente otra vez" << endl;
+        intentos++;
+        
     }
-
-    fclose(archivosemanal);
-    return true;
+    cout << "\nTe quedaste sin intentos, volve a ejecutar!!!" << endl;
+    return false;
 }
 
 
@@ -46,16 +81,13 @@ int main(){
 
     resumensemanal resumen[100];
     int lenresumen = 0;
-
     int totalvendido = 0;
-
     char nombrearchivo[50];
 
-    // Llama a la funcion y en caso que devuelva false la ejecuta hasta devolver true
-    while(!pedirarchivo(nombrearchivo)){
-        cout << "Intente otra vez.\n" << endl;
+    // Pide semana y mes, si se agotan los intentos se cancela la ejecucion
+    if(!pedirarchivo(nombrearchivo)){
+        cout << "Se cancela el resumen.\n" << endl;
     }
-
     FILE *archivosemanal = fopen(nombrearchivo, "rb");
     if(archivosemanal == NULL){
         cout <<"Error al abrir " << nombrearchivo << endl;
@@ -65,7 +97,6 @@ int main(){
     comanda aux;
 
     while(fread(&aux, sizeof(comanda), 1, archivosemanal) == 1){
-
         // entero auxiliar, se usa en el if solo para el primer registro leido
         int pos = lenresumen - 1; 
 
