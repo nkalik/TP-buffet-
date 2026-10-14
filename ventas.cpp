@@ -116,14 +116,14 @@ bool validarLogin(int idBuscado, const char *claveIngresada)
                 return true;
             }
 
-            cout << "Clave incorrecta." << endl;
+            cout << "Error: La contrasena ingresada es incorrecta." << endl;
             return false;
         }
     }
 
     fclose(f);
 
-    cout << "Error: Mozo inexistente." << endl;
+    cout << "Error: El ID de mozo ingresado es incorrecto o no existe." << endl;
     return false;
 }
 

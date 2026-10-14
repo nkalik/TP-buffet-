@@ -97,6 +97,7 @@ int main(){
     comanda aux;
 
     while(fread(&aux, sizeof(comanda), 1, archivosemanal) == 1){
+
         // entero auxiliar, se usa en el if solo para el primer registro leido
         int pos = lenresumen - 1; 
 
