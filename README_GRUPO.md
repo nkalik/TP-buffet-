@@ -32,6 +32,14 @@ En el primer punto alberto pide tener una lista de sus mozos prolija, para resol
 
   CIERRE
 
+Este programa lo hice yo con la ayuda de mis compañeros. El enunciado pide juntar todas las planillas de los días de la semana en una sola planilla semanal, y que quede ordenada por mozo, sin tener que reordenar todo de nuevo, ya que cada planilla de día sale ordenada por mozo gracias a `ventas.cpp`.
+
+Primero pregunta cuántos días tiene la semana a cerrar, y pide la fecha de cada uno, usando la misma validación de formato `DD-MM-AAAA` que usa `ventas.cpp`, para que las dos pantallas se comporten igual. Con cada fecha arma el nombre del archivo de ese día (`comandas_dd-mm-aaaa.dat`). Después pide el número de semana y el mes, y con eso arma el nombre del archivo de salida: `comandas_semana_sX-mm.dat`. Por ejemplo, semana 1 y mes 6 arma `comandas_semana_s1-06.dat`.
+
+Para juntar los archivos sin reordenar, abre todos los archivos de los días al mismo tiempo, y guarda en dos vectores el registro actual de cada uno (el primer dato que cada archivo tiene esperando) y si ese archivo todavía tiene datos para dar. En cada vuelta, se busca cuál de los archivos abiertos tiene el mozo con el número más chico, se graba ese registro en la planilla semanal, y se avanza solamente ese archivo al siguiente registro. Esto se repite hasta que ningún archivo tiene más registros para dar. Como cada archivo de día ya viene ordenado por mozo, siempre se encuentra el mozo más chico que queda en total, así que la planilla semanal sale ordenada sin reordenar nada a mano: solo se combina lo que ya estaba ordenado.
+
+Si algún día de los que se pidió todavía no tiene planilla generada (por ejemplo, porque ese día no se cargó ninguna venta), se avisa por pantalla que ese archivo no existe y se sigue el cierre con los demás días, en vez de cortar el programa entero. Al final, para verificar que el cierre salió bien, se recorre la planilla semanal recién creada y se muestra por pantalla.
+
   RESUMEN
 
   Es el ultimo programa en ejecutarse. Lee la planilla semanal y muestra por pantalla, para cada mozo, cuántas ventas hizo, cuántas unidades vendió y cuánta         comisión hay que pagarle. Abajo de todo muestra el total de unidades que vendió el buffet en la semana.
