@@ -34,4 +34,18 @@ En el primer punto alberto pide tener una lista de sus mozos prolija, para resol
 
   RESUMEN
 
+  Es el ultimo programa en ejecutarse. Lee la planilla semanal y muestra por pantalla, para cada mozo, cuántas ventas hizo, cuántas unidades vendió y cuánta         comisión hay que pagarle. Abajo de todo muestra el total de unidades que vendió el buffet en la semana.
+  Necesita que cierre.cpp ya haya generado comandas_semana_sX-mm.dat en la misma carpeta.
+
+  El programa pide: La semana (de 1 a 5) y el mes (de 1 a 12). Con eso arma el nombre del archivo. 
+  Por ejemplo, semana 1 y mes 6 abre comandas_semana_s1-06.dat.
+  Lee solo comandas_semana_sX-mm.dat y lo recorre con corte de control. El archivo semanal viene ordenado por mozo, así que todas las ventas de un mismo mozo        están seguidas. Por cada registro leído:
+  -Si el mozo es distinto al del último resumen (o es el primer registro), se crea un resumen nuevo en el vector resumen[] con todo en cero.
+  -Siempre se acumulan en el resumen actual las ventas, las unidades (cantidad) y la comisión.
+  -Se suma también al total de unidades del buffet.
+
+  No hace falta buscar al mozo en el vector, porque solo se compara con el último resumen. Por eso alcanza con recorrer el archivo una vez.
+  "Productos vendidos" se cuenta como unidades, o sea la suma de cantidad de cada venta. Además se muestra cuántas ventas hizo cada mozo.
+
+  El último mozo no necesita de una resolución especial. Como se acumula en cada registro, su resumen ya está completo cuando termina el archivo.      
   
