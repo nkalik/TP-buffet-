@@ -15,6 +15,29 @@ En un principio eramos 5 integrantes, por lo cual quedamos en que el programa de
 
 COMO CORRER LOS PROGRAMAS:
 
+Compilado con UCRT64 (MSYS2), desde la terminal de Visual Studio Code:
+
+Orden de ejecución (cada programa usa los archivos que deja el anterior):
+
+  g++ -o normalizacion normalizacion.cpp
+  g++ -o ventas ventas.cpp
+  g++ -o cierre cierre.cpp
+  g++ -o resumen resumen.cpp
+
+Disposición de los archivos:
+
+Todo en la misma carpeta:
+
+    TP_Buffet/
+        normalizacion.cpp   ventas.cpp   cierre.cpp   resumen.cpp
+        comandas_historicas.dat     <- lo da la cátedra
+        inventario.dat              <- lo da la cátedra (se va actualizando)
+
+        -- se generan al ejecutar --
+        mozos.dat
+        comandas_dd-mm-aaaa.dat     (uno por cada día)
+        comandas_semana_sX-mm.dat   (uno por cada semana)
+
 <!---------------------------------------------------------->
 NORMALIZACION
  <!---------------------------------------------------------->
