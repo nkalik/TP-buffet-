@@ -128,12 +128,30 @@ int main() {
   fclose(archivosemanal);
 
   cout << endl;
-  printf("%-8s%-12s%-14s%-10s\n", "ID", "Ventas", "Unidades", "Comision");
+  cout.width(8);
+  cout << "ID";
+  cout.width(12);
+  cout << "VENTAS";
+  cout.width(14);
+  cout << "UNIDADES";
+  cout.width(10);
+  cout << "COMISION";
+  cout << endl;
   cout << endl;
 
+  // comision con 2 decimales
+  cout.setf(ios::fixed);
+  cout.precision(2);
+
   for (int i = 0; i < lenresumen; i++) {
-    printf("%-8d%-12d%-14d$%-9.2f\n", resumen[i].idmozo, resumen[i].lenventas,
-           resumen[i].unidadesvendidas, resumen[i].totalcomision);
+    cout.width(8);
+    cout << resumen[i].idmozo;
+    cout.width(12);
+    cout << resumen[i].lenventas;
+    cout.width(14);
+    cout << resumen[i].unidadesvendidas;
+    cout.width(10);
+    cout << "$" << resumen[i].totalcomision << endl;
   }
 
   cout << "\nTotal de unidades vendidas en la semana: " << totalvendido << endl;
