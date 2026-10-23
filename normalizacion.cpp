@@ -122,13 +122,29 @@ void guardar_archivos(ventaspordia comandas[]) {
 // FUNCION QUE MUESTRA LA INFORMACION DEL INVENTARIO, DE FORMA LINDA
 void mostrar_inventario(producto productos[], int lenproductos) {
 
-  printf("%-10s%-20s%-10s%-10s\n", "codigo", "descripcion", "precio", "stock");
-  printf("--------------------------------------------------------\n");
+  cout.width(10);
+  cout << "CODIGO";
+  cout.width(20);
+  cout << "DESCRIPCION";
+  cout.width(10);
+  cout << "PRECIO";
+  cout.width(10);
+  cout << "STOCK" << endl;
+  cout << "--------------------------------------------------------" << endl;
+
+  // precio con 2 decimales
+  cout.setf(ios::fixed);
+  cout.precision(2);
 
   for (int i = 0; i < lenproductos; i++) {
-    printf("%-10d%-20s%-10.2f%-10d\n", productos[i].codigo,
-           productos[i].descripcion, productos[i].precio,
-           productos[i].stockactual);
+    cout.width(10);
+    cout << productos[i].codigo;
+    cout.width(20);
+    cout << productos[i].descripcion;
+    cout.width(10);
+    cout << productos[i].precio;
+    cout.width(10);
+    cout << productos[i].stockactual << endl;
   }
 }
 // FUNCION QUE MUESTRA LA INFORMACION DE LAS VENTAS DEL DIA
@@ -288,33 +304,36 @@ int main() {
 
   cout << "inventario cargado. productos: " << lenproductos << endl;
 
-  // ACTUALIZA STOCK
+  /* ACTUALIZA STOCK EN EL LUGAR. SE ABRE EL ARCHIVO EN rb+ Y, POR CADA VENTA,
+  SE SOBREESCRIBE SOLO EL REGISTRO DEL PRODUCTO AFECTADO, SIN REHACER TODO */
+
+  archivoinventario = fopen("inventario.dat", "rb+");
+
+  if (archivoinventario == NULL) {
+    cout << "error al abrir inventario.dat para actualizar stock" << endl;
+    return 1;
+  }
+
   for (int dia = 1; dia <= 31; dia++) {
 
     for (int i = 0; i < comandas[dia].lenventas; i++) {
 
-      int codigo = comandas[dia].ventas[i].codigoproducto;
+      int codigoproducto = comandas[dia].ventas[i].codigoproducto;
       int cantidad = comandas[dia].ventas[i].cantidad;
 
       for (int j = 0; j < lenproductos; j++) {
 
-        if (productos[j].codigo == codigo) {
+        if (productos[j].codigo == codigoproducto) {
           productos[j].stockactual -= cantidad;
+
+          // POSICIONA EN EL REGISTRO J Y SOBREESCRIBE SOLO ESE PRODUCTO
+          fseek(archivoinventario, j * sizeof(producto), SEEK_SET);
+          fwrite(&productos[j], sizeof(producto), 1, archivoinventario);
           break;
         }
       }
     }
   }
-
-  // GUARDA EL INVENTARIO ACTUALIZADO
-  archivoinventario = fopen("inventario.dat", "wb");
-
-  if (archivoinventario == NULL) {
-    cout << "error al guardar inventario.dat" << endl;
-    return 1;
-  }
-
-  fwrite(productos, sizeof(producto), lenproductos, archivoinventario);
 
   fclose(archivoinventario);
 
